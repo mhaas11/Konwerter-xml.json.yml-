@@ -164,20 +164,9 @@ class ConverterApp(QWidget):
 
 if __name__ == '__main__':
     input_path, output_path = parse_args(sys.argv)
-    print(f"Input path: {input_path}")
-    print(f"Output path: {output_path}")
-    app = QApplication(sys.argv)
-    ex = ConverterApp()
-    ex.setWindowTitle('File Converter')
-    ex.resize(400, 200)
-    ex.show()
-    sys.exit(app.exec_())
-
-
-if __name__ == '__main__':
-    input_path, output_path = parse_args(sys.argv)
     if input_path.endswith('.json'):
         data = read_json(input_path)
-        print(data)
+        write_json(data, output_path)
     else:
-        print("Only JSON input is supported in this task")
+        print("Only JSON input is supported in this task")   
+      
