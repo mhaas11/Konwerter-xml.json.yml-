@@ -65,8 +65,15 @@ def dict_to_elem(d):
     return elem
 
 def read_json(file_path):
-    with open(file_path, 'r', encoding='utf-8') as file:
-        return json.load(file)
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+            print("JSON data successfully read")
+            return data
+    except json.JSONDecodeError as e:
+        print(f"Error reading JSON file: {e}")
+        sys.exit(1)
+
 
 def write_json(data, file_path):
     with open(file_path, 'w', encoding='utf-8') as file:
@@ -165,3 +172,12 @@ if __name__ == '__main__':
     ex.resize(400, 200)
     ex.show()
     sys.exit(app.exec_())
+
+
+if __name__ == '__main__':
+    input_path, output_path = parse_args(sys.argv)
+    if input_path.endswith('.json'):
+        data = read_json(input_path)
+        print(data)
+    else:
+        print("Only JSON input is supported in this task")
