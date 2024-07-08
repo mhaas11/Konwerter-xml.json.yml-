@@ -108,6 +108,11 @@ def convert(input_path, output_path):
     else:
         raise ValueError(f'Unsupported output format: {output_format}')
 
+def save_data_to_json_file(data, file_path):
+    with open(file_path, 'w', encoding='utf-8') as file:
+        json.dump(data, file, indent=4)
+    print(f"Data successfully saved to {file_path}")
+
 class ConverterApp(QWidget):
     def __init__(self):
         super().__init__()
@@ -131,9 +136,14 @@ class ConverterApp(QWidget):
         self.btnConvert.clicked.connect(self.convertFile)
         self.layout.addWidget(self.btnConvert)
 
+        self.btnSaveJson = QPushButton('Save Data to JSON', self)
+        self.btnSaveJson.clicked.connect(self.saveDataToJson)
+        self.layout.addWidget(self.btnSaveJson)
+
         self.setLayout(self.layout)
         self.input_path = None
         self.output_path = None
+        self.data = None
 
     def selectInputFile(self):
         options = QFileDialog.Options()
@@ -154,12 +164,26 @@ class ConverterApp(QWidget):
     def convertFile(self):
         if self.input_path and self.output_path:
             try:
-                convert(self.input_path, self.output_path)
+                self.data = convert(self.input_path, self.output_path)
                 self.label.setText(f'Successfully converted {self.input_path} to {self.output_path}')
             except Exception as e:
                 self.label.setText(f'Error: {e}')
         else:
             self.label.setText('Please select both input and output files')
+
+    def saveDataToJson(self):
+        if self.data:
+            options = QFileDialog.Options()
+            fileName, _ = QFileDialog.getSaveFileName(self, "Save Data to JSON File", "", 
+                                                      "JSON Files (*.json)", options=options)
+            if fileName:
+                try:
+                    save_data_to_json_file(self.data, fileName)
+                    self.label.setText(f'Successfully saved data to {fileName}')
+                except Exception as e:
+                    self.label.setText(f'Error: {e}')
+        else:
+            self.label.setText('No data available to save')
 
 if __name__ == '__main__':
     parse_args(sys.argv)
