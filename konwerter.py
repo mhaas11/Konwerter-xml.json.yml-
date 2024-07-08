@@ -68,6 +68,11 @@ def read_json(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
         return json.load(file)
 
+def verify_json(data):
+    if not isinstance(data, dict):
+        raise ValueError("JSON data is not a valid dictionary")
+    # Add more validation checks as necessary
+
 def write_json(data, file_path):
     with open(file_path, 'w', encoding='utf-8') as file:
         json.dump(data, file, indent=4)
@@ -88,6 +93,7 @@ def convert(input_path, output_path):
         data = read_xml(input_path)
     elif input_format == 'json':
         data = read_json(input_path)
+        verify_json(data)
     elif input_format in ['yml', 'yaml']:
         data = read_yaml(input_path)
     else:
