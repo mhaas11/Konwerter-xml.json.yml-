@@ -1,0 +1,36 @@
+name: Build and Upload Executable
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '0 0 * * 0' # This runs at midnight on Sunday (UTC)
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: ./installResources.ps1
+      shell: powershell
+
+    - name: Build executable
+      run: pyinstaller --onefile --noconsole project.py
+      shell: powershell
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: project-exe
+        path: dist/project.exe
