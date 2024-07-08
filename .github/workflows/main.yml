@@ -33,4 +33,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: project-exe
-        path: dist/project.exe
+        path: dist/konwerter.exe
