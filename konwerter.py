@@ -2,7 +2,17 @@ import sys
 import json
 import xml.etree.ElementTree as ET
 import yaml
+import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QFileDialog, QLabel
+
+def parse_args(args):
+    if len(args) != 3:
+        print("Usage: program.exe pathFile1.x pathFile2.y")
+        sys.exit(1)
+    input_path = args[1]
+    output_path = args[2]
+    return input_path, output_path
+
 
 def read_xml(file_path):
     tree = ET.parse(file_path)
@@ -146,6 +156,9 @@ class ConverterApp(QWidget):
             self.label.setText('Please select both input and output files')
 
 if __name__ == '__main__':
+    input_path, output_path = parse_args(sys.argv)
+    print(f"Input path: {input_path}")
+    print(f"Output path: {output_path}")
     app = QApplication(sys.argv)
     ex = ConverterApp()
     ex.setWindowTitle('File Converter')
