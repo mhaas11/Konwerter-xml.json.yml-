@@ -2,6 +2,7 @@ import sys
 import json
 import xml.etree.ElementTree as ET
 import yaml
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QFileDialog, QLabel
 
 def read_xml(file_path):
     tree = ET.parse(file_path)
@@ -91,17 +92,63 @@ def convert(input_path, output_path):
     else:
         raise ValueError(f'Unsupported output format: {output_format}')
 
-if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("Usage: program.exe pathFile1.x pathFile2.y")
-        sys.exit(1)
+class ConverterApp(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
 
-    input_path = sys.argv[1]
-    output_path = sys.argv[2]
+    def initUI(self):
+        self.layout = QVBoxLayout()
 
-    try:
-        convert(input_path, output_path)
-        print(f'Successfully converted {input_path} to {output_path}')
-    except Exception as e:
-        print(f'Error: {e}')
-        sys.exit(1)
+        self.label = QLabel('Select a file to convert', self)
+        self.layout.addWidget(self.label)
+
+        self.btnInput = QPushButton('Select Input File', self)
+        self.btnInput.clicked.connect(self.selectInputFile)
+        self.layout.addWidget(self.btnInput)
+
+        self.btnOutput = QPushButton('Select Output File', self)
+        self.btnOutput.clicked.connect(self.selectOutputFile)
+        self.layout.addWidget(self.btnOutput)
+
+        self.btnConvert = QPushButton('Convert', self)
+        self.btnConvert.clicked.connect(self.convertFile)
+        self.layout.addWidget(self.btnConvert)
+
+        self.setLayout(self.layout)
+        self.input_path = None
+        self.output_path = None
+
+    def selectInputFile(self):
+        options = QFileDialog.Options()
+        fileName, _ = QFileDialog.getOpenFileName(self, "Select Input File", "", 
+                                                  "All Files (*);;XML Files (*.xml);;JSON Files (*.json);;YAML Files (*.yaml *.yml)", options=options)
+        if fileName:
+            self.input_path = fileName
+            self.label.setText(f'Selected input file: {fileName}')
+
+    def selectOutputFile(self):
+        options = QFileDialog.Options()
+        fileName, _ = QFileDialog.getSaveFileName(self, "Select Output File", "", 
+                                                  "All Files (*);;XML Files (*.xml);;JSON Files (*.json);;YAML Files (*.yaml *.yml)", options=options)
+        if fileName:
+            self.output_path = fileName
+            self.label.setText(f'Selected output file: {fileName}')
+
+    def convertFile(self):
+        if self.input_path and self.output_path:
+            try:
+                convert(self.input_path, self.output_path)
+                self.label.setText(f'Successfully converted {self.input_path} to {self.output_path}')
+            except Exception as e:
+                self.label.setText(f'Error: {e}')
+        else:
+            self.label.setText('Please select both input and output files')
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    ex = ConverterApp()
+    ex.setWindowTitle('File Converter')
+    ex.resize(400, 200)
+    ex.show()
+    sys.exit(app.exec_())
